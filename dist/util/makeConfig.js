@@ -61,8 +61,7 @@ function _makeConfig() {
               target: 'web',
               output: {
                 path: _path.default.resolve(projectRoot, 'www'),
-                filename: 'app.js',
-                publicPath: 'tester/'
+                filename: 'app.js'
               },
               resolve: {
                 modules: [_path.default.resolve(corpackRoot, 'node_modules')]

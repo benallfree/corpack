@@ -18,7 +18,6 @@ async function makeConfig(cfg = {}) {
       output: {
         path: path.resolve(projectRoot, 'www'),
         filename: 'app.js',
-        publicPath: 'tester/',
       },
       resolve: {
         modules: [path.resolve(corpackRoot, 'node_modules')],

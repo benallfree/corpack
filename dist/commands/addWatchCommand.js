@@ -31,6 +31,7 @@ function addWatchCommand(program) {
             case 0:
               _context.next = 2;
               return (0, _util.makeConfig)({
+                mode: 'development',
                 plugins: [new _plugins.RunCordovaPrepare()]
               });
 

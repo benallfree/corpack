@@ -5,6 +5,7 @@ import { RunCordovaPrepare } from '../plugins'
 function addWatchCommand(program) {
   program.command('watch').action(async cmd => {
     const config = await makeConfig({
+      mode: 'development',
       plugins: [new RunCordovaPrepare()],
     })
     const compiler = webpack(config)
