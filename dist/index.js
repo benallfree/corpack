@@ -19,8 +19,6 @@ var _path = _interopRequireDefault(require("path"));
 
 var _child_process = require("child_process");
 
-var _fs = _interopRequireDefault(require("fs"));
-
 var _os = _interopRequireDefault(require("os"));
 
 var _webpack = _interopRequireDefault(require("webpack"));
@@ -31,13 +29,29 @@ var _webpackDevServer = _interopRequireDefault(require("webpack-dev-server"));
 
 (0, _asyncToGenerator2.default)(
 /*#__PURE__*/
-_regenerator.default.mark(function _callee2() {
-  var rootConfig, ROOT, RunCordovaPrepare, makeConfig, externalIp, ifaces, dev, iface;
-  return _regenerator.default.wrap(function _callee2$(_context2) {
+_regenerator.default.mark(function _callee5() {
+  var rootConfig, ROOT, ex, _ex, RunCordovaPrepare, makeConfig, externalIp, ifaces, dev, iface, assetRoot, wpcb;
+
+  return _regenerator.default.wrap(function _callee5$(_context5) {
     while (1) {
-      switch (_context2.prev = _context2.next) {
+      switch (_context5.prev = _context5.next) {
         case 0:
-          makeConfig = function _ref4(cfg) {
+          wpcb = function _ref8(err, stats) {
+            if (err || stats.hasErrors()) {
+              if (err) {
+                console.log(err);
+              } else {
+                for (var i = 0; i < stats.compilation.errors.length; i++) {
+                  var error = stats.compilation.errors[i];
+                  console.log(error);
+                }
+              }
+            } else {
+              console.log('Finished building');
+            }
+          };
+
+          makeConfig = function _ref7(cfg) {
             var mode = cfg.mode,
                 dst = cfg.dst;
             return {
@@ -79,20 +93,55 @@ _regenerator.default.mark(function _callee2() {
             };
           };
 
-          _context2.next = 3;
+          _ex = function _ref6() {
+            _ex = (0, _asyncToGenerator2.default)(
+            /*#__PURE__*/
+            _regenerator.default.mark(function _callee4(cmd) {
+              return _regenerator.default.wrap(function _callee4$(_context4) {
+                while (1) {
+                  switch (_context4.prev = _context4.next) {
+                    case 0:
+                      return _context4.abrupt("return", new Promise(function (resolve, reject) {
+                        console.log("Running ".concat(cmd));
+                        (0, _child_process.exec)(cmd, {
+                          cwd: ROOT
+                        }, function (err, stdout, stderr) {
+                          if (err) {
+                            reject(err);
+                          }
+
+                          resolve(stdout);
+                        });
+                      }));
+
+                    case 1:
+                    case "end":
+                      return _context4.stop();
+                  }
+                }
+              }, _callee4, this);
+            }));
+            return _ex.apply(this, arguments);
+          };
+
+          ex = function _ref5(_x) {
+            return _ex.apply(this, arguments);
+          };
+
+          _context5.next = 6;
           return (0, _findUp.default)('config.xml');
 
-        case 3:
-          rootConfig = _context2.sent;
+        case 6:
+          rootConfig = _context5.sent;
 
           if (rootConfig) {
-            _context2.next = 6;
+            _context5.next = 9;
             break;
           }
 
           throw new Error('corpack must be run from inside a Cordova application root.');
 
-        case 6:
+        case 9:
           ROOT = _path.default.dirname(rootConfig);
           console.log("Cordova root is ".concat(ROOT));
 
@@ -106,19 +155,34 @@ _regenerator.default.mark(function _callee2() {
             (0, _createClass2.default)(RunCordovaPrepare, [{
               key: "apply",
               value: function apply(compiler) {
-                compiler.hooks.afterEmit.tapAsync('RunCordovaPrepare', function (compilation, callback) {
-                  console.log("Running 'cordova prepare'");
-                  (0, _child_process.exec)('cordova prepare', {
-                    cwd: ROOT
-                  }, function (err, stdout, stderr) {
-                    if (err) {
-                      console.log(err);
-                    }
+                compiler.hooks.afterEmit.tapAsync('RunCordovaPrepare',
+                /*#__PURE__*/
+                function () {
+                  var _ref2 = (0, _asyncToGenerator2.default)(
+                  /*#__PURE__*/
+                  _regenerator.default.mark(function _callee(compilation, callback) {
+                    return _regenerator.default.wrap(function _callee$(_context) {
+                      while (1) {
+                        switch (_context.prev = _context.next) {
+                          case 0:
+                            _context.next = 2;
+                            return ex('cordova prepare');
 
-                    console.log(stdout);
-                    callback();
-                  });
-                });
+                          case 2:
+                            callback();
+
+                          case 3:
+                          case "end":
+                            return _context.stop();
+                        }
+                      }
+                    }, _callee, this);
+                  }));
+
+                  return function (_x2, _x3) {
+                    return _ref2.apply(this, arguments);
+                  };
+                }());
               }
             }]);
             return RunCordovaPrepare;
@@ -135,34 +199,70 @@ _regenerator.default.mark(function _callee2() {
           }
 
           console.log("External IP looks like: ".concat(externalIp));
+          assetRoot = _path.default.join(__dirname, '../assets');
+
+          _commander.default.command('init').action(
+          /*#__PURE__*/
+          function () {
+            var _ref3 = (0, _asyncToGenerator2.default)(
+            /*#__PURE__*/
+            _regenerator.default.mark(function _callee2(cmd) {
+              var dst, mode, config;
+              return _regenerator.default.wrap(function _callee2$(_context2) {
+                while (1) {
+                  switch (_context2.prev = _context2.next) {
+                    case 0:
+                      _context2.next = 2;
+                      return ex('rm -rf ./www/*');
+
+                    case 2:
+                      _context2.next = 4;
+                      return ex('mkdir -p ./src');
+
+                    case 4:
+                      _context2.next = 6;
+                      return ex('rm -rf ./src/*');
+
+                    case 6:
+                      _context2.next = 8;
+                      return ex("cp -r ".concat(assetRoot, "/* ./src"));
+
+                    case 8:
+                      // await ex(`cordova platform add ios`)
+                      dst = _path.default.join(ROOT, 'www');
+                      mode = 'development';
+                      config = makeConfig({
+                        mode: mode,
+                        dst: dst
+                      });
+                      config.plugins.push(new RunCordovaPrepare());
+                      (0, _webpack.default)(config, wpcb);
+
+                    case 13:
+                    case "end":
+                      return _context2.stop();
+                  }
+                }
+              }, _callee2, this);
+            }));
+
+            return function (_x4) {
+              return _ref3.apply(this, arguments);
+            };
+          }());
 
           _commander.default.option('-h, --host [host]', 'Host [0.0.0.0]', null).option('-p, --port [port]', 'Port [4000]', '4000').option('-w, --watch [watch]', 'Watch for changes and build').option('-s, --serve [serve]', 'Start development server and watch for changes').option('--src [src]', 'Source folder to watch (relative path) [./src]', './src').option('-o, --out [out]', 'Output path (relative) [./www]', './www').option('--release', 'Production release').option('--ios [ios]', 'Use iOS platform for dev server [true]', true).option('--android [android]', 'Use Android platform for dev server [false]', false).action(
           /*#__PURE__*/
           function () {
-            var _ref2 = (0, _asyncToGenerator2.default)(
+            var _ref4 = (0, _asyncToGenerator2.default)(
             /*#__PURE__*/
-            _regenerator.default.mark(function _callee(cmd) {
-              var host, port, src, dst, mode, platform, wpcb, config, _config, _compiler, ip, _ifaces, _dev, _iface, devServer, _config2, compiler, server;
+            _regenerator.default.mark(function _callee3(cmd) {
+              var host, port, src, dst, mode, platform, config, _config, _compiler, ip, _ifaces, _dev, _iface, devServer, _config2, compiler, server;
 
-              return _regenerator.default.wrap(function _callee$(_context) {
+              return _regenerator.default.wrap(function _callee3$(_context3) {
                 while (1) {
-                  switch (_context.prev = _context.next) {
+                  switch (_context3.prev = _context3.next) {
                     case 0:
-                      wpcb = function _ref3(err, stats) {
-                        if (err || stats.hasErrors()) {
-                          if (err) {
-                            console.log(err);
-                          } else {
-                            for (var i = 0; i < stats.compilation.errors.length; i++) {
-                              var error = stats.compilation.errors[i];
-                              console.log(error);
-                            }
-                          }
-                        } else {
-                          console.log('Finished building');
-                        }
-                      };
-
                       host = cmd.host || '0.0.0.0';
                       port = cmd.port;
                       src = _path.default.join(ROOT, cmd.src);
@@ -224,25 +324,25 @@ _regenerator.default.mark(function _callee2() {
                         server.listen(devServer.port, devServer.host, function () {});
                       }
 
-                    case 10:
+                    case 9:
                     case "end":
-                      return _context.stop();
+                      return _context3.stop();
                   }
                 }
-              }, _callee, this);
+              }, _callee3, this);
             }));
 
-            return function (_x) {
-              return _ref2.apply(this, arguments);
+            return function (_x5) {
+              return _ref4.apply(this, arguments);
             };
           }());
 
           _commander.default.parse(process.argv);
 
-        case 15:
+        case 20:
         case "end":
-          return _context2.stop();
+          return _context5.stop();
       }
     }
-  }, _callee2, this);
+  }, _callee5, this);
 }))();

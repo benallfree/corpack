@@ -3,7 +3,6 @@ import program from 'commander'
 import findUp from 'find-up'
 import path from 'path'
 import { exec } from 'child_process'
-import fs from 'fs'
 import os from 'os'
 import webpack from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
@@ -18,19 +17,25 @@ import WebpackDevServer from 'webpack-dev-server'
   const ROOT = path.dirname(rootConfig)
   console.log(`Cordova root is ${ROOT}`)
 
+  async function ex(cmd) {
+    return new Promise((resolve, reject) => {
+      console.log(`Running ${cmd}`)
+      exec(cmd, { cwd: ROOT }, function(err, stdout, stderr) {
+        if (err) {
+          reject(err)
+        }
+        resolve(stdout)
+      })
+    })
+  }
+
   class RunCordovaPrepare {
     apply(compiler) {
       compiler.hooks.afterEmit.tapAsync(
         'RunCordovaPrepare',
-        (compilation, callback) => {
-          console.log(`Running 'cordova prepare'`)
-          exec('cordova prepare', { cwd: ROOT }, function(err, stdout, stderr) {
-            if (err) {
-              console.log(err)
-            }
-            console.log(stdout)
-            callback()
-          })
+        async (compilation, callback) => {
+          await ex('cordova prepare')
+          callback()
         },
       )
     }
@@ -98,6 +103,36 @@ import WebpackDevServer from 'webpack-dev-server'
   }
   console.log(`External IP looks like: ${externalIp}`)
 
+  const assetRoot = path.join(__dirname, '../assets')
+
+  function wpcb(err, stats) {
+    if (err || stats.hasErrors()) {
+      if (err) {
+        console.log(err)
+      } else {
+        for (let i = 0; i < stats.compilation.errors.length; i++) {
+          const error = stats.compilation.errors[i]
+          console.log(error)
+        }
+      }
+    } else {
+      console.log('Finished building')
+    }
+  }
+
+  program.command('init').action(async cmd => {
+    await ex('rm -rf ./www/*')
+    await ex('mkdir -p ./src')
+    await ex('rm -rf ./src/*')
+    await ex(`cp -r ${assetRoot}/* ./src`)
+    // await ex(`cordova platform add ios`)
+    const dst = path.join(ROOT, 'www')
+    const mode = 'development'
+    const config = makeConfig({ mode, dst })
+    config.plugins.push(new RunCordovaPrepare())
+    webpack(config, wpcb)
+  })
+
   program
     .option('-h, --host [host]', 'Host [0.0.0.0]', null)
     .option('-p, --port [port]', 'Port [4000]', '4000')
@@ -126,20 +161,7 @@ import WebpackDevServer from 'webpack-dev-server'
       const dst = path.join(ROOT, cmd.out)
       const mode = cmd.release ? 'production' : 'development'
       const platform = cmd.platform
-      function wpcb(err, stats) {
-        if (err || stats.hasErrors()) {
-          if (err) {
-            console.log(err)
-          } else {
-            for (let i = 0; i < stats.compilation.errors.length; i++) {
-              const error = stats.compilation.errors[i]
-              console.log(error)
-            }
-          }
-        } else {
-          console.log('Finished building')
-        }
-      }
+
       if (!cmd.watch && !cmd.serve) {
         const config = makeConfig({ mode, dst })
         config.plugins.push(new RunCordovaPrepare())
