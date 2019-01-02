@@ -26,7 +26,7 @@ corpack init
 Start an HMR-ready dev server:
 
 ```bash
-corpack --serve
+corpack serve
 ```
 
 Now run your app. Saving source files will instantly refresh in the app:
@@ -39,7 +39,7 @@ cordova run ios
 
 Corpack uses ES6 + proposals. Classes, decorators, arrow functions... you can use it all.
 
-`corpack init` uses [React](https://github.com/facebook/react/) as the base framework and comes preconfigured with it. If you use something different, it's easy enough to remove.
+`corpack init` uses [React](https://github.com/facebook/react/) as the base web framework and comes preconfigured with it. If you use something different, it's easy enough to remove. Checkout [onsen](https://github.com/OnsenUI/OnsenUI) for a Mobile UI framework, and [react-konva](https://github.com/konvajs/react-konva) to create badass `<canvas>` apps.
 
 React and Webpack work exceptionally well together. Most asset types can be embedded (SCSS, CSS, JS, GIF, PNG, JPG, MP3) and used in your applicaiton as follows:
 
@@ -49,15 +49,19 @@ import myPng from './assets/logo.png
 const Image = props=><Image src={myPng}/>
 ```
 
-## Other commands
+## Available Commands
 
-`corpack` by itself will run the equivalent of the `webpack` command with `cordova prepare` tacked on.
+`corepack <command>`:
 
-`corpack --watch` will watch continuously for file changes.
+Command | Discussion
+--------|------------
+init    | Initializes your Cordova app with a fresh project structure. **Caution: overwrites files; only use on new projects.**
+serve | Start an HMR-ready dev server so you can make changes on the fly. You'll need to rebuild and re-run your app (`cordova run ios`) after starting your server.
+watch | Just watch and rebuild sources (no dev server)
 
 ## Integrating into an exiting projects
 
-Corpack turns `./www` into a build directory. When you run Rearrange your source into the following folder structure:
+Corpack turns `./www` into a build directory. Rearrange your source into the following folder structure:
 
 ```
 ./www
