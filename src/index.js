@@ -41,6 +41,8 @@ import WebpackDevServer from 'webpack-dev-server'
     }
   }
 
+  console.log(path.resolve(__dirname, '../node_modules'))
+
   function makeConfig(cfg) {
     const { mode, dst } = cfg
     return {
@@ -51,6 +53,12 @@ import WebpackDevServer from 'webpack-dev-server'
         filename: 'app.js',
       },
       mode,
+      resolve: {
+        modules: [path.resolve(__dirname, '../node_modules')],
+      },
+      resolveLoader: {
+        modules: [path.resolve(__dirname, '../node_modules')],
+      },
       module: {
         rules: [
           {
@@ -75,13 +83,37 @@ import WebpackDevServer from 'webpack-dev-server'
             exclude: /node_modules/,
             use: {
               loader: 'babel-loader',
+              options: {
+                presets: [
+                  require('@babel/preset-env'),
+                  require('@babel/preset-react'),
+                ],
+                plugins: [
+                  require('@babel/plugin-transform-runtime'),
+                  require('@babel/plugin-proposal-export-namespace-from'),
+                  require('@babel/plugin-proposal-export-default-from'),
+                  require('@babel/plugin-transform-react-jsx'),
+                  [
+                    require('@babel/plugin-proposal-decorators'),
+                    {
+                      decoratorsBeforeExport: false,
+                    },
+                  ],
+                  [
+                    require('@babel/plugin-proposal-class-properties'),
+                    {
+                      loose: true,
+                    },
+                  ],
+                ],
+              },
             },
           },
         ],
       },
       plugins: [
         new HtmlWebpackPlugin({
-          template: path.join(__dirname, '../assets/index.html'),
+          template: './src/index.html',
           templateParameters: {
             host: cfg.devServerHost || '',
           },

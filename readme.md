@@ -14,6 +14,7 @@ Create a new Cordova app:
 
 ```bash
 cordova create hello com.example.hello HelloWorld
+cordova platform add ios
 ```
 
 Initialize it with Corpack:

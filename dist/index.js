@@ -62,6 +62,12 @@ _regenerator.default.mark(function _callee5() {
                 filename: 'app.js'
               },
               mode: mode,
+              resolve: {
+                modules: [_path.default.resolve(__dirname, '../node_modules')]
+              },
+              resolveLoader: {
+                modules: [_path.default.resolve(__dirname, '../node_modules')]
+              },
               module: {
                 rules: [{
                   test: /\.scss$/,
@@ -78,12 +84,20 @@ _regenerator.default.mark(function _callee5() {
                   test: /\.(js|jsx)$/,
                   exclude: /node_modules/,
                   use: {
-                    loader: 'babel-loader'
+                    loader: 'babel-loader',
+                    options: {
+                      presets: [require('@babel/preset-env'), require('@babel/preset-react')],
+                      plugins: [require('@babel/plugin-transform-runtime'), require('@babel/plugin-proposal-export-namespace-from'), require('@babel/plugin-proposal-export-default-from'), require('@babel/plugin-transform-react-jsx'), [require('@babel/plugin-proposal-decorators'), {
+                        decoratorsBeforeExport: false
+                      }], [require('@babel/plugin-proposal-class-properties'), {
+                        loose: true
+                      }]]
+                    }
                   }
                 }]
               },
               plugins: [new _htmlWebpackPlugin.default({
-                template: _path.default.join(__dirname, '../assets/index.html'),
+                template: './src/index.html',
                 templateParameters: {
                   host: cfg.devServerHost || ''
                 }
@@ -188,6 +202,7 @@ _regenerator.default.mark(function _callee5() {
             return RunCordovaPrepare;
           }();
 
+          console.log(_path.default.resolve(__dirname, '../node_modules'));
           externalIp = null;
           ifaces = _os.default.networkInterfaces();
 
@@ -339,7 +354,7 @@ _regenerator.default.mark(function _callee5() {
 
           _commander.default.parse(process.argv);
 
-        case 20:
+        case 21:
         case "end":
           return _context5.stop();
       }
