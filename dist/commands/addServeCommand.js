@@ -15,46 +15,76 @@ var _webpack = _interopRequireDefault(require("webpack"));
 
 var _path = _interopRequireDefault(require("path"));
 
-var _util = require("../util");
-
 var _webpackDevServer = _interopRequireDefault(require("webpack-dev-server"));
 
+var _findUp = _interopRequireDefault(require("find-up"));
+
+var _util = require("../util");
+
+var _plugins = require("../plugins");
+
 function addServeCommand(program) {
-  program.command('serve').option('--ios', 'Use iOS platform for dev server [true]', true).option('--android', 'Use Android platform for dev server [false]', false).action(
+  program.command('serve').action(
   /*#__PURE__*/
   function () {
     var _ref = (0, _asyncToGenerator2.default)(
     /*#__PURE__*/
     _regenerator.default.mark(function _callee(cmd) {
-      var ip, config, compiler, server;
+      var ip, publicPath, packConfig, projectRoot, devServer, liveConfig, compiler, server;
       return _regenerator.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
               ip = (0, _util.getExternalIp)();
               console.log("External IP looks like: ".concat(ip));
-              _context.next = 4;
+              publicPath = "http://".concat(ip, ":", 8080, "/");
+              _context.next = 5;
               return (0, _util.makeConfig)({
                 output: {
-                  publicPath: "http://".concat(ip, ":", 8080, "/")
+                  publicPath: publicPath
                 },
                 mode: 'development',
-                devServer: {
-                  contentBase: [_path.default.join(__dirname, 'www'), _path.default.join(__dirname, "platforms/".concat(cmd.ios ? 'ios' : 'android', "/www"))],
-                  host: ip,
-                  port: 8080,
-                  hot: true
+                plugins: [new _plugins.RunCordovaPrepare()]
+              });
+
+            case 5:
+              packConfig = _context.sent;
+              (0, _webpack.default)(packConfig, _util.wpcb);
+              _context.next = 9;
+              return (0, _util.findRoot)();
+
+            case 9:
+              projectRoot = _context.sent;
+              _context.next = 12;
+              return (0, _findUp.default)('package.json', {
+                cwd: __dirname
+              });
+
+            case 12:
+              devServer = {
+                contentBase: [_path.default.resolve(projectRoot, 'www'), _path.default.resolve(projectRoot, "platforms/ios/www")],
+                publicPath: publicPath,
+                host: ip,
+                port: 8080,
+                hot: true
+              };
+              _context.next = 15;
+              return (0, _util.makeConfig)({
+                output: {
+                  publicPath: publicPath
                 },
+                mode: 'development',
+                devServer: devServer,
                 plugins: [new _webpack.default.HotModuleReplacementPlugin()]
               });
 
-            case 4:
-              config = _context.sent;
-              compiler = (0, _webpack.default)(config);
-              server = new _webpackDevServer.default(compiler);
+            case 15:
+              liveConfig = _context.sent;
+              compiler = (0, _webpack.default)(liveConfig);
+              server = new _webpackDevServer.default(compiler, devServer);
               server.listen(8080, ip, function () {});
 
-            case 8:
+            case 19:
             case "end":
               return _context.stop();
           }
