@@ -21,8 +21,6 @@ var _findUp = _interopRequireDefault(require("find-up"));
 
 var _util = require("../util");
 
-var _plugins = require("../plugins");
-
 function addServeCommand(program) {
   program.command('serve').action(
   /*#__PURE__*/
@@ -43,8 +41,7 @@ function addServeCommand(program) {
                 output: {
                   publicPath: publicPath
                 },
-                mode: 'development',
-                plugins: [new _plugins.RunCordovaPrepare()]
+                mode: 'development'
               });
 
             case 5:
@@ -64,9 +61,13 @@ function addServeCommand(program) {
               devServer = {
                 contentBase: [_path.default.resolve(projectRoot, 'www'), _path.default.resolve(projectRoot, "platforms/ios/www")],
                 publicPath: publicPath,
-                host: ip,
+                host: '0.0.0.0',
                 port: 8080,
-                hot: true
+                hot: false,
+                writeToDisk: function writeToDisk(filePath) {
+                  return true;
+                  return /\.html$/.test(filePath);
+                }
               };
               _context.next = 15;
               return (0, _util.makeConfig)({
@@ -74,8 +75,7 @@ function addServeCommand(program) {
                   publicPath: publicPath
                 },
                 mode: 'development',
-                devServer: devServer,
-                plugins: [new _webpack.default.HotModuleReplacementPlugin()]
+                devServer: devServer
               });
 
             case 15:

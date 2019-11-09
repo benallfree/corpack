@@ -15,8 +15,6 @@ var _webpack = _interopRequireDefault(require("webpack"));
 
 var _util = require("../util");
 
-var _plugins = require("../plugins");
-
 function addPackCommand(program) {
   program.command('pack').action(
   /*#__PURE__*/
@@ -31,9 +29,7 @@ function addPackCommand(program) {
             case 0:
               console.log('Packing...');
               _context.next = 3;
-              return (0, _util.makeConfig)({
-                plugins: [new _plugins.RunCordovaPrepare()]
-              });
+              return (0, _util.makeConfig)();
 
             case 3:
               config = _context.sent;

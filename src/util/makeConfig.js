@@ -4,6 +4,8 @@ import webpack from 'webpack'
 import _ from 'lodash'
 import findUp from 'find-up'
 import ExtraWatchWebpackPlugin from 'extra-watch-webpack-plugin'
+import { RunCordovaPrepare } from '../plugins'
+
 import { findRoot } from '.'
 
 async function makeConfig(cfg = {}) {
@@ -20,7 +22,7 @@ async function makeConfig(cfg = {}) {
         filename: 'app.js',
       },
       resolve: {
-        modules: [path.resolve(corpackRoot, 'node_modules')],
+        modules: [path.resolve(projectRoot, 'node_modules')],
       },
       resolveLoader: {
         modules: [path.resolve(corpackRoot, 'node_modules')],
@@ -84,6 +86,7 @@ async function makeConfig(cfg = {}) {
         new ExtraWatchWebpackPlugin({
           dirs: [path.resolve(projectRoot, 'src')],
         }),
+        new RunCordovaPrepare(),
       ],
     },
     cfg,

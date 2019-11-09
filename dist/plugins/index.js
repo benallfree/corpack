@@ -15,15 +15,3 @@ Object.keys(_RunCordovaPrepare).forEach(function (key) {
     }
   });
 });
-
-var _InsertCordovaScript = require("./InsertCordovaScript");
-
-Object.keys(_InsertCordovaScript).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _InsertCordovaScript[key];
-    }
-  });
-});

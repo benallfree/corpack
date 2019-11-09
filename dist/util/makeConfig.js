@@ -23,6 +23,8 @@ var _findUp = _interopRequireDefault(require("find-up"));
 
 var _extraWatchWebpackPlugin = _interopRequireDefault(require("extra-watch-webpack-plugin"));
 
+var _plugins = require("../plugins");
+
 var _2 = require(".");
 
 function makeConfig() {
@@ -64,7 +66,7 @@ function _makeConfig() {
                 filename: 'app.js'
               },
               resolve: {
-                modules: [_path.default.resolve(corpackRoot, 'node_modules')]
+                modules: [_path.default.resolve(projectRoot, 'node_modules')]
               },
               resolveLoader: {
                 modules: [_path.default.resolve(corpackRoot, 'node_modules')]
@@ -101,7 +103,7 @@ function _makeConfig() {
                 template: _path.default.resolve(projectRoot, 'src/index.html')
               }), new _extraWatchWebpackPlugin.default({
                 dirs: [_path.default.resolve(projectRoot, 'src')]
-              })]
+              }), new _plugins.RunCordovaPrepare()]
             }, cfg, function (objValue, srcValue) {
               if (_lodash.default.isArray(objValue)) {
                 return objValue.concat(srcValue);

@@ -4,7 +4,6 @@ import WebpackDevServer from 'webpack-dev-server'
 import findUp from 'find-up'
 
 import { makeConfig, getExternalIp, wpcb, findRoot } from '../util'
-import { RunCordovaPrepare } from '../plugins'
 
 function addServeCommand(program) {
   program.command('serve').action(async cmd => {
@@ -16,7 +15,6 @@ function addServeCommand(program) {
         publicPath,
       },
       mode: 'development',
-      plugins: [new RunCordovaPrepare()],
     })
     webpack(packConfig, wpcb)
 
@@ -29,9 +27,13 @@ function addServeCommand(program) {
         path.resolve(projectRoot, `platforms/ios/www`),
       ],
       publicPath,
-      host: ip,
+      host: '0.0.0.0',
       port: 8080,
-      hot: true,
+      hot: false,
+      writeToDisk: filePath => {
+        return true
+        return /\.html$/.test(filePath)
+      },
     }
 
     const liveConfig = await makeConfig({
@@ -40,7 +42,6 @@ function addServeCommand(program) {
       },
       mode: 'development',
       devServer,
-      plugins: [new webpack.HotModuleReplacementPlugin()],
     })
     var compiler = webpack(liveConfig)
     var server = new WebpackDevServer(compiler, devServer)
